@@ -12,6 +12,8 @@ import React from 'react';
 import { useGLTF } from '@react-three/drei';
 import { GLTF } from 'three-stdlib';
 
+type GLTFAction = unknown;
+
 type GLTFResult = GLTF & {
   nodes: {
     Object_8: THREE.Mesh;
