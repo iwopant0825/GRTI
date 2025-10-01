@@ -18,8 +18,10 @@ export function useFPSControllerFromModel(rootRef: React.MutableRefObject<THREE.
   const playerPos = useRef(new THREE.Vector3()); // foot position (capsule center at feet)
   const bounds = useRef<THREE.Box3 | null>(null);
   const spawnPos = useRef(new THREE.Vector3());
+  const baseFloorY = useRef(0);
   const isPaused = useRef(false);
   const skipFrames = useRef(0);
+  const framesNoGround = useRef(0);
 
   // Build collision world from model meshes
   useEffect(() => {
@@ -59,6 +61,7 @@ export function useFPSControllerFromModel(rootRef: React.MutableRefObject<THREE.
     }
     if (!isFinite(bestY)) bestY = bbox.min.y;
     const eyeY = bestY + capsuleEyeHeight;
+    baseFloorY.current = bestY;
     // Place camera higher to avoid initial penetration
     camera.position.set(center.x, eyeY + 1.6, center.z);
     // Initialize foot position under camera
@@ -157,6 +160,7 @@ export function useFPSControllerFromModel(rootRef: React.MutableRefObject<THREE.
       const hits = ray.intersectObjects(meshes, false);
       const bestY = hits[0]?.point.y ?? bbox.min.y;
       const eyeY = bestY + capsuleEyeHeight;
+      baseFloorY.current = bestY;
       camera.position.set(center.x, eyeY + 1.6, center.z);
       const footY = eyeY - (capsuleEyeHeight - capsuleRadius);
       playerPos.current.set(center.x, footY, center.z);
@@ -288,6 +292,7 @@ export function useFPSControllerFromModel(rootRef: React.MutableRefObject<THREE.
         const dy = groundY - newPos.y;
         newPos.y += THREE.MathUtils.clamp(dy, -0.3, 0.3) * 0.5;
         onGround.current = true;
+        framesNoGround.current = 0;
         if (Math.abs(groundY - newPos.y) < 0.02) {
           newPos.y = groundY;
           velocity.current.y = 0;
@@ -296,15 +301,23 @@ export function useFPSControllerFromModel(rootRef: React.MutableRefObject<THREE.
         }
       } else {
         onGround.current = false;
+        framesNoGround.current++;
       }
     } else if (velocity.current.y > 0) {
       onGround.current = false;
+      // going up – keep counter but don't reset
+    } else {
+      // no ground hit at all
+      framesNoGround.current++;
     }
 
     // Respawn guard if out of bounds or unstable
     if (bounds.current) {
       const b = bounds.current;
-      if (!isFinite(newPos.x + newPos.y + newPos.z) || newPos.y < b.min.y - 1) {
+      const fellBelowBox = newPos.y < b.min.y - 1;
+      const fellBelowFloor = newPos.y < baseFloorY.current - 2;
+      const lostGroundTooLong = framesNoGround.current > 60; // ~1s at 60fps
+      if (!isFinite(newPos.x + newPos.y + newPos.z) || fellBelowBox || fellBelowFloor || lostGroundTooLong) {
         playerPos.current.copy(spawnPos.current);
         camera.position.set(
           spawnPos.current.x,
@@ -313,6 +326,7 @@ export function useFPSControllerFromModel(rootRef: React.MutableRefObject<THREE.
         );
         velocity.current.set(0, 0, 0);
         onGround.current = true;
+        framesNoGround.current = 0;
         return;
       }
     }

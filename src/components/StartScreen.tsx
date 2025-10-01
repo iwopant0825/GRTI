@@ -18,7 +18,7 @@ export function StartScreen() {
       <Header>
         <Brand>
           <Logo />
-          GR 홈 익스플로러
+          GRTI
         </Brand>
       </Header>
       <Hero
@@ -29,24 +29,6 @@ export function StartScreen() {
         <Kicker>믿고 바꾸는 재활용 제품, GR</Kicker>
         <Title>환경보호, GR과 함께</Title>
         <Sub>우리집에서 시작하는 교체 여행. 찾고, 바꾸고, 배우고, 공유하세요.</Sub>
-        <Chips
-          variants={{ show: { transition: { staggerChildren: 0.06 } } }}
-          initial="hidden"
-          animate="show"
-        >
-          <Pill variants={chipV}>
-            <Dot /> 제품 찾기
-          </Pill>
-          <Pill variants={chipV}>
-            <Dot /> 교체·점수
-          </Pill>
-          <Pill variants={chipV}>
-            <Dot /> 카드 해금
-          </Pill>
-          <Pill variants={chipV}>
-            <Dot /> 결과·공유
-          </Pill>
-        </Chips>
         <CTA>
           <StartButton
             whileHover={{ scale: 1.02 }}
@@ -55,7 +37,6 @@ export function StartScreen() {
           >
             시작하기
           </StartButton>
-          <Meta>클릭 후 포인터 잠금 · WASD 이동 · Space 점프</Meta>
         </CTA>
       </Hero>
 
@@ -100,11 +81,6 @@ export function StartScreen() {
     </Root>
   );
 }
-
-const chipV = {
-  hidden: { opacity: 0, y: 4 },
-  show: { opacity: 1, y: 0 }
-};
 
 const Root = styled(motion.div)`
   position: absolute;
@@ -181,33 +157,6 @@ const Sub = styled.p`
   font-size: 15px;
 `;
 
-const Chips = styled(motion.div)`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 22px;
-`;
-
-const Pill = styled(motion.span)`
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  font-size: 12px;
-  color: #dbe6e2;
-`;
-
-const Dot = styled.span`
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #00d084;
-  box-shadow: 0 0 0 3px rgba(0, 208, 132, 0.15);
-`;
-
 const CTA = styled.div`
   display: flex;
   align-items: center;
@@ -222,11 +171,6 @@ const StartButton = styled(motion.button)`
   font-weight: 800;
   border: none;
   cursor: pointer;
-`;
-
-const Meta = styled.span`
-  color: #b6c4c0;
-  font-size: 12px;
 `;
 
 const Guide = styled.div`
@@ -269,12 +213,12 @@ const MouseBox = styled.span`
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.18);
   border: 1px solid rgba(255, 255, 255, 0.28);
-  color: #9fb5af;
+  color: #ffffff;
   display: grid;
   place-items: center;
 `;
 
 const GuideLabel = styled.span`
-  color: #6f7f7a;
+  color: #ffffff;
   font-size: 14px;
 `;

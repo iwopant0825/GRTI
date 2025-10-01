@@ -5,6 +5,7 @@ import { Sky } from '@react-three/drei';
 import { Model as Apartment } from './models/Apartment';
 import { StartScreen } from './components/StartScreen';
 import { useAppViewStore } from './store/viewStore';
+import { Crosshair } from './components/Crosshair';
 
 export function App() {
   const view = useAppViewStore((s) => s.view);
@@ -33,6 +34,7 @@ export function App() {
           <Sky />
         </Suspense>
       </Canvas>
+      {view === 'scene' && <Crosshair />}
       {view === 'start' && <StartScreen />}
     </Root>
   );
