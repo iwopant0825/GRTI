@@ -294,7 +294,7 @@ export function LandingPage() {
                     backgroundColor: '#000000',
                     padding: 12,
                     displayColors: false,
-                    titleFont: { size: 13, weight: '600' },
+                    titleFont: { size: 13, weight: 600 },
                     bodyFont: { size: 12 }
                   }
                 },
@@ -302,10 +302,10 @@ export function LandingPage() {
                   x: {
                     grid: { display: false },
                     border: { display: false },
-                    ticks: { color: '#71717A', font: { size: 11, weight: '500' } }
+                    ticks: { color: '#71717A', font: { size: 11, weight: 500 } }
                   },
                   y: {
-                    grid: { color: '#F4F4F5', drawBorder: false },
+                    grid: { color: '#F4F4F5' },
                     border: { display: false },
                     ticks: { color: '#71717A', font: { size: 11 }, stepSize: 10 }
                   }
