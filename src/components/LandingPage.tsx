@@ -435,10 +435,13 @@ const Header = styled.header`
   top: 0;
   left: 0;
   right: 0;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid #f4f4f5;
   z-index: 100;
+  @media (max-width: 768px) {
+    backdrop-filter: blur(16px);
+  }
 `;
 
 const HeaderInner = styled.div`
@@ -448,6 +451,12 @@ const HeaderInner = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  @media (max-width: 768px) {
+    padding: 20px 24px;
+  }
+  @media (max-width: 480px) {
+    padding: 16px 20px;
+  }
 `;
 
 const LogoBadge = styled.div`
@@ -462,6 +471,11 @@ const LogoBadge = styled.div`
   font-size: 15px;
   font-weight: 700;
   letter-spacing: 0.5px;
+  @media (max-width: 480px) {
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+  }
 `;
 
 const Nav = styled.nav`
@@ -496,8 +510,14 @@ const Hero = styled.section`
   max-width: 1080px;
   margin: 0 auto;
   padding: 200px 32px 160px;
+  @media (max-width: 968px) {
+    padding: 160px 32px 120px;
+  }
   @media (max-width: 768px) {
     padding: 140px 24px 100px;
+  }
+  @media (max-width: 480px) {
+    padding: 120px 20px 80px;
   }
 `;
 
@@ -509,6 +529,9 @@ const HeroContent = styled(motion.div)`
 
 const TitleWrap = styled.div`
   margin-bottom: 20px;
+  @media (max-width: 480px) {
+    margin-bottom: 16px;
+  }
 `;
 
 const Tagline = styled.div`
@@ -518,6 +541,14 @@ const Tagline = styled.div`
   letter-spacing: 2px;
   text-transform: uppercase;
   margin-bottom: 16px;
+  @media (max-width: 768px) {
+    font-size: 14px;
+    letter-spacing: 1.5px;
+  }
+  @media (max-width: 480px) {
+    font-size: 13px;
+    letter-spacing: 1.2px;
+  }
 `;
 
 const HeroDesc = styled.p`
@@ -526,6 +557,13 @@ const HeroDesc = styled.p`
   font-weight: 400;
   line-height: 1.6;
   margin: 0 0 40px;
+  @media (max-width: 768px) {
+    font-size: 18px;
+  }
+  @media (max-width: 480px) {
+    font-size: 16px;
+    margin: 0 0 32px;
+  }
 `;
 
 const CTARow = styled.div`
@@ -548,6 +586,15 @@ const PrimaryBtn = styled(motion.button)`
   border: none;
   cursor: pointer;
   letter-spacing: -0.2px;
+  transition: all 0.2s;
+  @media (max-width: 640px) {
+    width: 100%;
+    max-width: 280px;
+  }
+  @media (max-width: 480px) {
+    padding: 14px 32px;
+    font-size: 14px;
+  }
 `;
 
 const TextBtn = styled(motion.a)`
@@ -556,16 +603,26 @@ const TextBtn = styled(motion.a)`
   color: #52525b;
   text-decoration: none;
   cursor: pointer;
+  transition: color 0.2s;
   &:hover {
     color: #18181b;
+  }
+  @media (max-width: 480px) {
+    font-size: 14px;
   }
 `;
 
 // Section
 const Section = styled.section`
   padding: 120px 32px;
+  @media (max-width: 968px) {
+    padding: 100px 32px;
+  }
   @media (max-width: 768px) {
     padding: 80px 24px;
+  }
+  @media (max-width: 480px) {
+    padding: 60px 20px;
   }
 `;
 
@@ -581,15 +638,23 @@ const SectionLabel = styled.div`
   text-transform: uppercase;
   color: #a1a1aa;
   margin-bottom: 20px;
+  @media (max-width: 480px) {
+    font-size: 11px;
+    letter-spacing: 1.2px;
+  }
 `;
 
 const SectionTitle = styled.h2`
-  font-size: clamp(32px, 4vw, 44px);
+  font-size: clamp(28px, 5vw, 44px);
   font-weight: 700;
   line-height: 1.3;
   color: #18181b;
   margin: 0 0 32px;
   letter-spacing: -0.5px;
+  @media (max-width: 480px) {
+    margin: 0 0 24px;
+    line-height: 1.4;
+  }
 `;
 
 const Divider = styled.div`
@@ -597,6 +662,12 @@ const Divider = styled.div`
   height: 2px;
   background: #18181b;
   margin-bottom: 60px;
+  @media (max-width: 768px) {
+    margin-bottom: 48px;
+  }
+  @media (max-width: 480px) {
+    margin-bottom: 40px;
+  }
 `;
 
 // Three Column
@@ -606,6 +677,9 @@ const ThreeCol = styled.div`
   gap: 40px;
   @media (max-width: 968px) {
     grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  @media (max-width: 480px) {
     gap: 32px;
   }
 `;
@@ -620,6 +694,10 @@ const ColNum = styled.div`
   color: #a1a1aa;
   margin-bottom: 16px;
   letter-spacing: 0.5px;
+  @media (max-width: 480px) {
+    font-size: 12px;
+    margin-bottom: 12px;
+  }
 `;
 
 const ColTitle = styled.h3`
@@ -627,6 +705,12 @@ const ColTitle = styled.h3`
   font-weight: 700;
   color: #18181b;
   margin: 0 0 12px;
+  @media (max-width: 768px) {
+    font-size: 18px;
+  }
+  @media (max-width: 480px) {
+    font-size: 17px;
+  }
 `;
 
 const ColText = styled.p`
@@ -634,6 +718,10 @@ const ColText = styled.p`
   line-height: 1.7;
   color: #52525b;
   margin: 0;
+  @media (max-width: 480px) {
+    font-size: 14px;
+    line-height: 1.6;
+  }
 `;
 
 // Stats
@@ -645,6 +733,7 @@ const StatGrid = styled.div`
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
     gap: 24px;
+    margin-bottom: 40px;
   }
 `;
 
@@ -653,6 +742,9 @@ const StatCard = styled.div`
   text-align: center;
   border: 1px solid #f4f4f5;
   border-radius: 8px;
+  @media (max-width: 480px) {
+    padding: 32px 0;
+  }
 `;
 
 const StatNumber = styled.div`
@@ -661,12 +753,21 @@ const StatNumber = styled.div`
   color: #18181b;
   margin-bottom: 8px;
   letter-spacing: -1px;
+  @media (max-width: 768px) {
+    font-size: 44px;
+  }
+  @media (max-width: 480px) {
+    font-size: 40px;
+  }
 `;
 
 const StatLabel = styled.div`
   font-size: 13px;
   font-weight: 500;
   color: #71717a;
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
 `;
 
 const BenefitsList = styled.div`
@@ -674,6 +775,9 @@ const BenefitsList = styled.div`
   gap: 12px;
   justify-content: center;
   flex-wrap: wrap;
+  @media (max-width: 480px) {
+    gap: 8px;
+  }
 `;
 
 const BenefitTag = styled.div`
@@ -684,6 +788,10 @@ const BenefitTag = styled.div`
   font-size: 13px;
   font-weight: 600;
   color: #52525b;
+  @media (max-width: 480px) {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
 `;
 
 // Process
@@ -694,9 +802,12 @@ const ProcessList = styled.div`
   margin-bottom: 48px;
   @media (max-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
   }
   @media (max-width: 480px) {
     grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 40px;
   }
 `;
 
@@ -707,6 +818,10 @@ const ProcessItem = styled.div`
   padding: 24px;
   border: 1px solid #f4f4f5;
   border-radius: 8px;
+  @media (max-width: 480px) {
+    padding: 20px;
+    gap: 14px;
+  }
 `;
 
 const ProcessNum = styled.div`
@@ -721,12 +836,20 @@ const ProcessNum = styled.div`
   justify-content: center;
   font-size: 14px;
   font-weight: 700;
+  @media (max-width: 480px) {
+    width: 32px;
+    height: 32px;
+    font-size: 13px;
+  }
 `;
 
 const ProcessText = styled.div`
   font-size: 15px;
   font-weight: 600;
   color: #18181b;
+  @media (max-width: 480px) {
+    font-size: 14px;
+  }
 `;
 
 const ProcessMeta = styled.div`
@@ -734,6 +857,9 @@ const ProcessMeta = styled.div`
   font-size: 14px;
   color: #71717a;
   font-weight: 500;
+  @media (max-width: 480px) {
+    font-size: 13px;
+  }
 `;
 
 // Chart
@@ -744,8 +870,13 @@ const ChartBox = styled.div`
   border-radius: 8px;
   margin-bottom: 48px;
   @media (max-width: 768px) {
-    padding: 24px;
+    padding: 28px;
     height: 280px;
+  }
+  @media (max-width: 480px) {
+    padding: 20px;
+    height: 240px;
+    margin-bottom: 40px;
   }
 `;
 
@@ -756,9 +887,11 @@ const CategoryGrid = styled.div`
   gap: 24px;
   @media (max-width: 968px) {
     grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
   }
   @media (max-width: 480px) {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 `;
 
@@ -766,6 +899,9 @@ const CategoryCol = styled.div`
   padding: 24px;
   border: 1px solid #f4f4f5;
   border-radius: 8px;
+  @media (max-width: 480px) {
+    padding: 20px;
+  }
 `;
 
 const CategoryTitle = styled.h4`
@@ -773,6 +909,10 @@ const CategoryTitle = styled.h4`
   font-weight: 700;
   color: #18181b;
   margin: 0 0 12px;
+  @media (max-width: 480px) {
+    font-size: 13px;
+    margin: 0 0 10px;
+  }
 `;
 
 const CategoryItems = styled.div`
@@ -780,6 +920,10 @@ const CategoryItems = styled.div`
   line-height: 1.7;
   color: #71717a;
   font-weight: 500;
+  @media (max-width: 480px) {
+    font-size: 12px;
+    line-height: 1.6;
+  }
 `;
 
 // FAQ
@@ -789,6 +933,9 @@ const FAQList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
+  @media (max-width: 480px) {
+    gap: 16px;
+  }
 `;
 
 const FAQItem = styled.div`
@@ -800,6 +947,12 @@ const FAQItem = styled.div`
     border-color: #e4e4e7;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
   }
+  @media (max-width: 768px) {
+    padding: 24px;
+  }
+  @media (max-width: 480px) {
+    padding: 20px;
+  }
 `;
 
 const FAQQ = styled.div`
@@ -808,6 +961,13 @@ const FAQQ = styled.div`
   color: #18181b;
   margin-bottom: 12px;
   line-height: 1.5;
+  @media (max-width: 768px) {
+    font-size: 15px;
+  }
+  @media (max-width: 480px) {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
 `;
 
 const FAQA = styled.div`
@@ -815,6 +975,10 @@ const FAQA = styled.div`
   line-height: 1.7;
   color: #52525b;
   font-weight: 400;
+  @media (max-width: 480px) {
+    font-size: 13px;
+    line-height: 1.6;
+  }
 `;
 
 // Footer
@@ -822,6 +986,12 @@ const Footer = styled.footer`
   background: #fafafa;
   border-top: 1px solid #f4f4f5;
   padding: 60px 32px;
+  @media (max-width: 768px) {
+    padding: 48px 24px;
+  }
+  @media (max-width: 480px) {
+    padding: 40px 20px;
+  }
 `;
 
 const FooterInner = styled.div`
@@ -843,6 +1013,9 @@ const FooterRow = styled.div`
 const FooterLinks = styled.div`
   display: flex;
   gap: 32px;
+  @media (max-width: 480px) {
+    gap: 24px;
+  }
 `;
 
 const FooterLink = styled.a`
@@ -850,8 +1023,12 @@ const FooterLink = styled.a`
   font-weight: 600;
   color: #71717a;
   text-decoration: none;
+  transition: color 0.2s;
   &:hover {
     color: #18181b;
+  }
+  @media (max-width: 480px) {
+    font-size: 12px;
   }
 `;
 
@@ -859,6 +1036,9 @@ const FooterDivider = styled.div`
   height: 1px;
   background: #f4f4f5;
   margin-bottom: 24px;
+  @media (max-width: 480px) {
+    margin-bottom: 20px;
+  }
 `;
 
 const FooterNotice = styled.div`
@@ -867,6 +1047,10 @@ const FooterNotice = styled.div`
   text-align: center;
   margin-bottom: 12px;
   font-weight: 500;
+  @media (max-width: 480px) {
+    font-size: 11px;
+    line-height: 1.5;
+  }
 `;
 
 const FooterCopy = styled.div`
@@ -874,4 +1058,8 @@ const FooterCopy = styled.div`
   color: #d4d4d8;
   text-align: center;
   font-weight: 400;
+  line-height: 1.6;
+  @media (max-width: 480px) {
+    font-size: 10px;
+  }
 `;
