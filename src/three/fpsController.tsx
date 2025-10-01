@@ -3,16 +3,23 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { CollisionWorld, buildCollisionWorld, sweepCollision } from './collision';
+import { useAppViewStore } from '../store/viewStore';
 
 type Keys = Record<string, boolean>;
 
 export function useFPSControllerFromModel(rootRef: React.MutableRefObject<THREE.Object3D | null>) {
   const { camera, gl } = useThree();
+  const view = useAppViewStore((s) => s.view);
+  const setView = useAppViewStore((s) => s.setView);
   const keys = useRef<Keys>({});
   const velocity = useRef(new THREE.Vector3());
   const onGround = useRef(false);
   const world = useRef<CollisionWorld | null>(null);
   const playerPos = useRef(new THREE.Vector3()); // foot position (capsule center at feet)
+  const bounds = useRef<THREE.Box3 | null>(null);
+  const spawnPos = useRef(new THREE.Vector3());
+  const isPaused = useRef(false);
+  const skipFrames = useRef(0);
 
   // Build collision world from model meshes
   useEffect(() => {
@@ -31,6 +38,7 @@ export function useFPSControllerFromModel(rootRef: React.MutableRefObject<THREE.
 
     // Spawn camera at floor near model center to avoid falling
     const bbox = new THREE.Box3().setFromObject(root);
+    bounds.current = bbox;
     const center = new THREE.Vector3();
     bbox.getCenter(center);
     const ray = new THREE.Raycaster();
@@ -56,33 +64,146 @@ export function useFPSControllerFromModel(rootRef: React.MutableRefObject<THREE.
     // Initialize foot position under camera
     const footY = eyeY - (capsuleEyeHeight - capsuleRadius);
     playerPos.current.set(center.x, footY, center.z);
+    spawnPos.current.copy(playerPos.current);
     // Lock player on ground initially
     onGround.current = true;
     velocity.current.set(0, 0, 0);
-  }, [rootRef]);
+  }, [rootRef, camera]);
 
   // Pointer lock for mouse look
   useEffect(() => {
     const dom = gl.domElement;
     const request = () => dom.requestPointerLock();
     const handleClick = () => {
+      if (view !== 'scene') return;
       if (document.pointerLockElement !== dom) request();
     };
     dom.addEventListener('click', handleClick);
     return () => dom.removeEventListener('click', handleClick);
-  }, [gl]);
+  }, [gl, view]);
+
+  // If pointer lock is exited (ESC 등), 즉시 시작 화면으로 전환
+  useEffect(() => {
+    const dom = gl.domElement;
+    const onLockChange = () => {
+      const locked = document.pointerLockElement === dom;
+      if (!locked && view === 'scene') {
+        setView('start');
+      }
+    };
+    document.addEventListener('pointerlockchange', onLockChange);
+    return () => document.removeEventListener('pointerlockchange', onLockChange);
+  }, [gl, view, setView]);
+
+  // Pause on tab hide/blur, resume on focus; drop first frames to avoid dt spike
+  useEffect(() => {
+    const onVis = () => {
+      const hidden = document.hidden;
+      isPaused.current = hidden;
+      if (hidden) {
+        velocity.current.set(0, 0, 0);
+      } else {
+        skipFrames.current = 2;
+      }
+    };
+    const onBlur = () => {
+      isPaused.current = true;
+      velocity.current.set(0, 0, 0);
+    };
+    const onFocus = () => {
+      isPaused.current = false;
+      skipFrames.current = 2;
+    };
+    document.addEventListener('visibilitychange', onVis);
+    window.addEventListener('blur', onBlur);
+    window.addEventListener('focus', onFocus);
+    return () => {
+      document.removeEventListener('visibilitychange', onVis);
+      window.removeEventListener('blur', onBlur);
+      window.removeEventListener('focus', onFocus);
+    };
+  }, []);
+
+  // Handle WebGL context loss/restoration
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const dom = gl.domElement as HTMLCanvasElement;
+    const onLost = (e: Event) => {
+      e.preventDefault();
+      isPaused.current = true;
+    };
+    const onRestored = () => {
+      isPaused.current = false;
+      skipFrames.current = 2;
+      const root = rootRef.current;
+      if (!root) return;
+      const meshes: THREE.Mesh[] = [];
+      root.updateWorldMatrix(true, true);
+      root.traverse((o) => {
+        const m = o as THREE.Mesh;
+        if (m.isMesh && m.geometry) {
+          meshes.push(m);
+        }
+      });
+      world.current = buildCollisionWorld(meshes);
+      const bbox = new THREE.Box3().setFromObject(root);
+      bounds.current = bbox;
+      const center = new THREE.Vector3();
+      bbox.getCenter(center);
+      const ray = new THREE.Raycaster();
+      const origin = new THREE.Vector3(center.x, bbox.max.y + 10, center.z);
+      ray.set(origin, new THREE.Vector3(0, -1, 0));
+      ray.far = bbox.max.y - bbox.min.y + 20;
+      const hits = ray.intersectObjects(meshes, false);
+      const bestY = hits[0]?.point.y ?? bbox.min.y;
+      const eyeY = bestY + capsuleEyeHeight;
+      camera.position.set(center.x, eyeY + 1.6, center.z);
+      const footY = eyeY - (capsuleEyeHeight - capsuleRadius);
+      playerPos.current.set(center.x, footY, center.z);
+      spawnPos.current.copy(playerPos.current);
+      onGround.current = true;
+      velocity.current.set(0, 0, 0);
+    };
+    dom.addEventListener('webglcontextlost', onLost as EventListener);
+    dom.addEventListener('webglcontextrestored', onRestored as EventListener);
+    return () => {
+      dom.removeEventListener('webglcontextlost', onLost as EventListener);
+      dom.removeEventListener('webglcontextrestored', onRestored as EventListener);
+    };
+  }, [gl, rootRef, camera]);
 
   // Keyboard input
   useEffect(() => {
-    const down = (e: KeyboardEvent) => (keys.current[e.code] = true);
-    const up = (e: KeyboardEvent) => (keys.current[e.code] = false);
+    const down = (e: KeyboardEvent) => {
+      if (e.code === 'Escape') {
+        if (view === 'scene') {
+          setView('start');
+          if (document.exitPointerLock) document.exitPointerLock();
+        }
+        return;
+      }
+      if (view !== 'scene') return;
+      keys.current[e.code] = true;
+    };
+    const up = (e: KeyboardEvent) => {
+      if (view !== 'scene') return;
+      keys.current[e.code] = false;
+    };
     window.addEventListener('keydown', down);
     window.addEventListener('keyup', up);
     return () => {
       window.removeEventListener('keydown', down);
       window.removeEventListener('keyup', up);
     };
-  }, []);
+  }, [view, setView]);
+
+  // When entering start view, clear movement state
+  useEffect(() => {
+    if (view !== 'scene') {
+      keys.current = {} as Keys;
+      velocity.current.set(0, 0, 0);
+    }
+  }, [view]);
 
   // Mouse look
   useEffect(() => {
@@ -112,6 +233,13 @@ export function useFPSControllerFromModel(rootRef: React.MutableRefObject<THREE.
 
   useFrame((_, dt) => {
     if (!world.current) return;
+    if (view !== 'scene') return;
+    if (isPaused.current) return;
+    if (skipFrames.current > 0) {
+      skipFrames.current -= 1;
+      return;
+    }
+    const frameDt = Math.min(dt, 0.05);
     const input = new THREE.Vector3();
     const forward = new THREE.Vector3();
     camera.getWorldDirection(forward);
@@ -132,7 +260,7 @@ export function useFPSControllerFromModel(rootRef: React.MutableRefObject<THREE.
     }
 
     // Apply gravity
-    velocity.current.y -= gravity * dt;
+    velocity.current.y -= gravity * frameDt;
 
     // Desired horizontal velocity blends towards input
     const currentHorizontal = new THREE.Vector3(velocity.current.x, 0, velocity.current.z);
@@ -142,7 +270,7 @@ export function useFPSControllerFromModel(rootRef: React.MutableRefObject<THREE.
     velocity.current.z = currentHorizontal.z;
 
     // Move with collision sweep
-    const delta = velocity.current.clone().multiplyScalar(dt);
+    const delta = velocity.current.clone().multiplyScalar(frameDt);
     const start = playerPos.current.clone();
     const moved = sweepCollision(world.current, start, delta, capsuleRadius, 4);
     const newPos = start.clone().add(moved);
@@ -155,16 +283,38 @@ export function useFPSControllerFromModel(rootRef: React.MutableRefObject<THREE.
     const gh = world.current ? rayDown.intersectObjects(world.current.meshes, false) : [];
     if (gh[0] && velocity.current.y <= 0) {
       const groundY = gh[0].point.y + capsuleRadius;
-      const diff = footProbeStart.y - 0.3 - groundY; // distance from foot to ground
-      if (diff >= -0.02 && diff <= 0.25) {
-        newPos.y = groundY;
+      const diff = footProbeStart.y - 0.3 - groundY;
+      if (diff >= -0.05 && diff <= 0.35) {
+        const dy = groundY - newPos.y;
+        newPos.y += THREE.MathUtils.clamp(dy, -0.3, 0.3) * 0.5;
         onGround.current = true;
-        velocity.current.y = 0;
+        if (Math.abs(groundY - newPos.y) < 0.02) {
+          newPos.y = groundY;
+          velocity.current.y = 0;
+        } else {
+          velocity.current.y *= 0.25;
+        }
       } else {
         onGround.current = false;
       }
     } else if (velocity.current.y > 0) {
       onGround.current = false;
+    }
+
+    // Respawn guard if out of bounds or unstable
+    if (bounds.current) {
+      const b = bounds.current;
+      if (!isFinite(newPos.x + newPos.y + newPos.z) || newPos.y < b.min.y - 1) {
+        playerPos.current.copy(spawnPos.current);
+        camera.position.set(
+          spawnPos.current.x,
+          spawnPos.current.y + (capsuleEyeHeight - capsuleRadius),
+          spawnPos.current.z
+        );
+        velocity.current.set(0, 0, 0);
+        onGround.current = true;
+        return;
+      }
     }
 
     // Commit foot position and update camera at eye height

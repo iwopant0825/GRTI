@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-type AppView = 'scene' | 'cards' | 'result';
+type AppView = 'start' | 'scene' | 'cards' | 'result';
 
 interface AppViewState {
   view: AppView;
@@ -8,7 +8,7 @@ interface AppViewState {
 }
 
 export const useAppViewStore = create<AppViewState>((set) => ({
-  view: 'scene',
+  view: 'start',
   setView: (next) => set({ view: next })
 }));
 

@@ -3,8 +3,11 @@ import styled from 'styled-components';
 import { Canvas } from '@react-three/fiber';
 import { Sky } from '@react-three/drei';
 import { Model as Apartment } from './models/Apartment';
+import { StartScreen } from './components/StartScreen';
+import { useAppViewStore } from './store/viewStore';
 
 export function App() {
+  const view = useAppViewStore((s) => s.view);
   return (
     <Root>
       <Canvas
@@ -30,6 +33,7 @@ export function App() {
           <Sky />
         </Suspense>
       </Canvas>
+      {view === 'start' && <StartScreen />}
     </Root>
   );
 }
