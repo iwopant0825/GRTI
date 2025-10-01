@@ -7,9 +7,20 @@ interface AppViewState {
   setView: (next: AppView) => void;
 }
 
-export const useAppViewStore = create<AppViewState>((set) => ({
+interface LoadingState {
+  progress: number;
+  loaded: boolean;
+  setProgress: (progress: number) => void;
+  setLoaded: (loaded: boolean) => void;
+}
+
+export const useAppViewStore = create<AppViewState & LoadingState>((set) => ({
   view: 'start',
-  setView: (next) => set({ view: next })
+  progress: 0,
+  loaded: false,
+  setView: (next) => set({ view: next }),
+  setProgress: (progress) => set({ progress }),
+  setLoaded: (loaded) => set({ loaded })
 }));
 
 

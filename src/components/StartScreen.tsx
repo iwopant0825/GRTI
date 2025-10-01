@@ -101,8 +101,11 @@ function MainTitle() {
 
 export function StartScreen() {
   const setView = useAppViewStore((s) => s.setView);
+  const loaded = useAppViewStore((s) => s.loaded);
+  const progress = useAppViewStore((s) => s.progress);
 
   const handleStart = () => {
+    if (!loaded) return;
     setView('scene');
     const canvas = document.querySelector('canvas');
     canvas?.requestPointerLock?.();
@@ -126,14 +129,28 @@ export function StartScreen() {
         <Title aria-label="GRTI logo title">
           <MainTitle />
         </Title>
+        {!loaded && (
+          <ProgressWrap
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            aria-live="polite"
+          >
+            <ProgressBar>
+              <ProgressFill style={{ width: `${progress}%` }} />
+            </ProgressBar>
+            <ProgressText>{progress}%</ProgressText>
+          </ProgressWrap>
+        )}
         <Sub>우리집에서 시작하는 교체 여행. 찾고, 바꾸고, 배우고, 공유하세요.</Sub>
         <CTA>
           <StartButton
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={loaded ? { scale: 1.02 } : undefined}
+            whileTap={loaded ? { scale: 0.98 } : undefined}
+            disabled={!loaded}
             onClick={handleStart}
           >
-            시작하기
+            {loaded ? '시작하기' : '로딩 중...'}
           </StartButton>
         </CTA>
       </Hero>
@@ -188,6 +205,7 @@ const Root = styled(motion.div)`
   grid-template-rows: auto 1fr auto;
   padding: 6vh 6vw;
   place-items: stretch;
+  z-index: 2;
 `;
 
 const Backdrop = styled.div`
@@ -269,6 +287,8 @@ const StartButton = styled(motion.button)`
   font-weight: 800;
   border: none;
   cursor: pointer;
+  opacity: ${(p) => ((p as any).disabled ? 0.6 : 1)};
+  cursor: ${(p) => ((p as any).disabled ? 'not-allowed' : 'pointer')};
 `;
 
 const Guide = styled.div`
@@ -319,4 +339,33 @@ const MouseBox = styled.span`
 const GuideLabel = styled.span`
   color: #ffffff;
   font-size: 14px;
+`;
+
+const ProgressWrap = styled(motion.div)`
+  display: grid;
+  gap: 10px;
+  margin: 8px 0 12px;
+  place-items: center;
+`;
+
+const ProgressBar = styled.div`
+  width: min(420px, 60vw);
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  overflow: hidden;
+`;
+
+const ProgressFill = styled.div`
+  height: 100%;
+  background: linear-gradient(90deg, #00d084, #00b478);
+  border-radius: inherit;
+  transition: width 0.2s ease;
+`;
+
+const ProgressText = styled.span`
+  color: #e6eeeb;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 `;
