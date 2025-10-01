@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { useAppViewStore } from '../store/viewStore';
 
-function MainTitle() {
+export function MainTitle() {
   const draw = {
     hidden: { pathLength: 0, opacity: 0 },
     visible: (i: number) => {
@@ -114,12 +114,6 @@ export function StartScreen() {
   return (
     <Root initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
       <Backdrop />
-      <Header>
-        <Brand>
-          <Logo />
-          GRTI
-        </Brand>
-      </Header>
       <Hero
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -215,29 +209,7 @@ const Backdrop = styled.div`
   background: radial-gradient(60% 60% at 20% 20%, rgba(10, 12, 14, 0.4), rgba(10, 12, 14, 0.28));
 `;
 
-const Header = styled.div`
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-`;
-
-const Brand = styled.div`
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  color: #d7e6e1;
-  font-weight: 700;
-`;
-
-const Logo = styled.span`
-  width: 18px;
-  height: 18px;
-  border-radius: 4px;
-  background: linear-gradient(180deg, #00d084, #00b478);
-  box-shadow: 0 0 0 4px rgba(0, 208, 132, 0.12);
-  display: inline-block;
-`;
+// header 요소 제거됨
 
 const Hero = styled(motion.section)`
   position: relative;

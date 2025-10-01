@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Canvas } from '@react-three/fiber';
 import { Sky } from '@react-three/drei';
 import { Model as Apartment } from './models/Apartment';
-import { StartScreen } from './components/StartScreen';
+import { LandingPage } from './components/LandingPage';
 import { useAppViewStore } from './store/viewStore';
 import { useProgress } from '@react-three/drei';
 import { Crosshair } from './components/Crosshair';
@@ -27,32 +27,36 @@ export function App() {
 
   return (
     <Root>
-      <Canvas
-        dpr={[1, 2]}
-        camera={{ position: [6, 4, 8], fov: 50 }}
-        style={{ width: '100%', height: '100%' }}
-        shadows
-      >
-        <ambientLight intensity={0.6} />
-        <directionalLight
-          position={[10, 15, 8]}
-          intensity={1.2}
-          castShadow
-          shadow-bias={-0.0005}
-          shadow-mapSize-width={2048}
-          shadow-mapSize-height={2048}
-          shadow-camera-near={0.1}
-          shadow-camera-far={100}
-        />
-        <pointLight position={[0, 5, 0]} intensity={0.3} castShadow />
-        <Suspense fallback={null}>
-          <Apartment />
-          <Sky />
-        </Suspense>
-      </Canvas>
-      {view === 'scene' && <Crosshair />}
-      {view === 'start' && <StartScreen />}
-      <SceneCover aria-hidden={!sceneReady} $visible={sceneReady} />
+      {view !== 'scene' && <LandingPage />}
+      {view === 'scene' && (
+        <>
+          <Canvas
+            dpr={[1, 2]}
+            camera={{ position: [6, 4, 8], fov: 50 }}
+            style={{ width: '100%', height: '100%' }}
+            shadows
+          >
+            <ambientLight intensity={0.6} />
+            <directionalLight
+              position={[10, 15, 8]}
+              intensity={1.2}
+              castShadow
+              shadow-bias={-0.0005}
+              shadow-mapSize-width={2048}
+              shadow-mapSize-height={2048}
+              shadow-camera-near={0.1}
+              shadow-camera-far={100}
+            />
+            <pointLight position={[0, 5, 0]} intensity={0.3} castShadow />
+            <Suspense fallback={null}>
+              <Apartment />
+              <Sky />
+            </Suspense>
+          </Canvas>
+          <Crosshair />
+          <SceneCover aria-hidden={!sceneReady} $visible={sceneReady} />
+        </>
+      )}
     </Root>
   );
 }
